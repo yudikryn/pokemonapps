@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menuListPokemon"
+        android:icon="@drawable/ic_list_pokemon"
+        android:title="Catch Pokemon" />
+
+    <item
+        android:id="@+id/menuMyPokemon"
+        android:icon="@drawable/ic_my_pokemon"
+        android:title="My Pokemon" />
+</menu>
