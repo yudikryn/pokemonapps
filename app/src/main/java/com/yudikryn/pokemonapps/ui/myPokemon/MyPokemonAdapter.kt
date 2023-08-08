@@ -39,7 +39,7 @@ class MyPokemonAdapter(private val onClick: (pokemon: PokemonEntity, action: Str
         fun bind(pokemon: PokemonEntity, position: Int, onClick: (pokemon: PokemonEntity, action: String, position: Int) -> Unit) {
             binding.apply {
 
-                tvName.text = pokemon.name.capitalize(Locale.getDefault())
+                tvName.text = StringBuilder(pokemon.name.capitalize(Locale.getDefault())).append("- ${pokemon.pokeFibo}")
 
                 binding.tvRelease.setOnClickListener {
                     onClick.invoke(pokemon, ACTION_RELEASE, position)

@@ -25,7 +25,8 @@ class PokemonRepository private constructor(
                 val mPokemon = MutableLiveData<List<Pokemon>>()
                 val pokemon: LiveData<List<Pokemon>> = mPokemon
 
-                val getRemoteData = apiService.getPokemon(startFrom = startFrom, pageSize = pageSize).results
+                val getRemoteData =
+                    apiService.getPokemon(startFrom = startFrom, pageSize = pageSize).results
 
                 withContext(Dispatchers.Main) {
                     mPokemon.value = getRemoteData
@@ -54,7 +55,8 @@ class PokemonRepository private constructor(
                     mPokemon.value = getLocalData
                 }
 
-                val result: LiveData<Result<List<PokemonEntity>>> = pokemon.map { Result.Success(it) }
+                val result: LiveData<Result<List<PokemonEntity>>> =
+                    pokemon.map { Result.Success(it) }
                 emitSource(result)
             }
 
@@ -94,10 +96,32 @@ class PokemonRepository private constructor(
                 val mPokemon = MutableLiveData<Long>()
                 val pokemon: LiveData<Long> = mPokemon
 
-                val getLocalData = localDao.insertPokemon(pokemonEntity = pokemonEntity)
+                val getMyPokemon = localDao.getMyPokemon()
 
-                withContext(Dispatchers.Main) {
-                    mPokemon.value = getLocalData
+                if (getMyPokemon.isNotEmpty()) {
+                    var nextFibo = getNextFibonacci(getMyPokemon.last().pokeFibo)
+                    if (getMyPokemon.size == 2) {
+                        nextFibo = 1
+                    }
+                    val getLocalData = localDao.insertPokemon(
+                        pokemonEntity =
+                        PokemonEntity(
+                            id = pokemonEntity.id,
+                            name = pokemonEntity.name,
+                            pokeFibo = nextFibo
+                        )
+                    )
+
+                    withContext(Dispatchers.Main) {
+                        mPokemon.value = getLocalData
+                    }
+
+                } else {
+                    val getLocalData = localDao.insertPokemon(pokemonEntity = pokemonEntity)
+
+                    withContext(Dispatchers.Main) {
+                        mPokemon.value = getLocalData
+                    }
                 }
 
                 val result: LiveData<Result<Long>> = pokemon.map { Result.Success(it) }
@@ -108,6 +132,20 @@ class PokemonRepository private constructor(
             Log.d("PokemonRepository", "insertPokemon: ${e.message.toString()} ")
             emit(Result.Error(e.message.toString()))
         }
+    }
+
+    private fun getNextFibonacci(previous: Int): Int {
+        var a = 0
+        var b = 1
+        var next = a + b
+
+        while (next <= previous) {
+            a = b
+            b = next
+            next = a + b
+        }
+
+        return next
     }
 
     fun updatePokemon(pokemonEntity: PokemonEntity): LiveData<Result<Int>> = liveData {

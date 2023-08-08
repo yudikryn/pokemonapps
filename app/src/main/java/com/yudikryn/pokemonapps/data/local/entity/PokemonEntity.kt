@@ -12,5 +12,7 @@ data class PokemonEntity (
     @ColumnInfo(name = "id")
     val id: Int,
     @ColumnInfo(name = "name")
-    var name: String
+    var name: String,
+    @ColumnInfo(name = "poke_fibo")
+    var pokeFibo: Int = 0
 )

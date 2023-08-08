@@ -15,6 +15,7 @@ import com.yudikryn.pokemonapps.data.remote.model.Pokemon
 import com.yudikryn.pokemonapps.databinding.ActivityDetailPokemonBinding
 import com.yudikryn.pokemonapps.helper.ViewModelFactory
 import java.util.Locale
+import kotlin.random.Random
 
 class DetailPokemonActivity : AppCompatActivity(R.layout.activity_detail_pokemon) {
 
@@ -105,18 +106,27 @@ class DetailPokemonActivity : AppCompatActivity(R.layout.activity_detail_pokemon
     }
 
     private fun insertPokemon(pokemonEntity: PokemonEntity){
-        viewModel.insertPokemon(pokemonEntity).observe(this){ result ->
-            when(result){
-                is Result.Success -> {
-                    Toast.makeText(this, "Sukses catch ${pokemonEntity.name}", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-                is Result.Loading -> {}
-                is Result.Error -> {
-                    Toast.makeText(this, result.error, Toast.LENGTH_SHORT).show()
+        if (catchPokemon()){
+            viewModel.insertPokemon(pokemonEntity).observe(this){ result ->
+                when(result){
+                    is Result.Success -> {
+                        Toast.makeText(this, "Success to catch ${pokemonEntity.name}", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                    is Result.Loading -> {}
+                    is Result.Error -> {
+                        Toast.makeText(this, result.error, Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
+        }else{
+            Toast.makeText(this, "Failed to catch ${pokemonEntity.name}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun catchPokemon(): Boolean {
+        val randomValue = Random.nextDouble()
+        return randomValue < 0.5
     }
 
     companion object {
